@@ -25,8 +25,11 @@ app.use(
 );
 
 app.use(cors({
-  origin: "https://scatch-frontend-gamma.vercel.app",
-  credentials: true,
+  origin: [
+    "http://localhost:5173",
+    "https://scatch-frontend-gamma.vercel.app"
+  ],
+  credentials: true
 }));
 
 app.use(express.json());
@@ -39,8 +42,6 @@ app.use("/owners", ownersRouter);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
 
-// app.get("/", (req, res) => {
-//   res.send("hello");
-// });
+
 
 app.listen(3000);
