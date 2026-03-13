@@ -25,7 +25,7 @@ app.use(
 );
 
 app.use(cors({
-  origin: "https://scatch-frontend-gamma.vercel.app/",
+  origin: "https://scatch-frontend-gamma.vercel.app",
   credentials: true,
 }));
 
