@@ -66,7 +66,8 @@ module.exports.loginUser = async function (req, res) {
     }
 
     let token = genrateToken(user);
-
+    
+    
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
