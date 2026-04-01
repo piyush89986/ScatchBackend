@@ -1,101 +1,108 @@
-const userModel = require("../models/user.model");
-const bcrypt = require("bcrypt");
-const { genrateToken } = require("../utils/genrateToken");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user.model"); // apna model
 
-/**
- * REGISTER USER
- */
-module.exports.registerUser = async function (req, res) {
+// 🔹 Generate Token Function
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+};
+
+// 🔹 REGISTER
+exports.registerUser = async (req, res) => {
   try {
-    const { email, fullname, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !fullname || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    // check existing user
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
     }
 
-    const userExists = await userModel.findOne({ email });
-    if (userExists) {
-      return res.status(409).json({ message: "Email already registered" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await userModel.create({
+    // create user
+    user = await User.create({
+      name,
       email,
-      fullname,
-      password: hashedPassword,
+      password, // assume hashing model me ho raha hai
     });
 
-    const token = genrateToken(user);
+    const token = generateToken(user);
 
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: false, // HTTPS me true
+      secure: false, // production me true
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "User registered successfully",
       user: {
         id: user._id,
-        fullname: user.fullname,
+        name: user.name,
         email: user.email,
       },
     });
+
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-/**
- * LOGIN USER
- */
-module.exports.loginUser = async function (req, res) {
+// 🔹 LOGIN
+exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    let user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "Email or password incorrect" });
+    const user = await User.findOne({ email });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Email or password incorrect" });
-    }
+    const token = generateToken(user);
 
-    let token = genrateToken(user);
-    
-    
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
       secure: false,
     });
 
-    return res.status(200).json({
+    res.json({
       success: true,
       message: "Login successful",
       user: {
         id: user._id,
-        fullname: user.fullname,
+        name: user.name,
         email: user.email,
       },
     });
+
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-/**
- * LOGOUT USER
- */
-module.exports.logout = function (req, res) {
+// 🔹 LOGOUT
+exports.logoutUser = (req, res) => {
   res.clearCookie("token");
 
-  return res.status(200).json({
+  res.json({
     success: true,
-    message: "Logout successful",
+    message: "Logged out successfully",
   });
 };

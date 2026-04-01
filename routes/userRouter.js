@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   registerUser,
   loginUser,
-  logout,
+  logoutUser,
 } = require("../controllers/authControllers");
 
 /**
- * CHECK AUTH / USER STATUS (OPTIONAL BUT USEFUL FOR REACT)
+ * CHECK USER AUTH STATUS
  */
-router.get("/users", function (req, res) {
+router.get("/me", (req, res) => {
   if (req.user) {
     return res.json({
       loggedIn: true,
@@ -17,7 +18,7 @@ router.get("/users", function (req, res) {
     });
   }
 
-  res.json({
+  return res.json({
     loggedIn: false,
   });
 });
@@ -35,6 +36,6 @@ router.post("/login", loginUser);
 /**
  * LOGOUT
  */
-router.get("/logout", logout);
+router.get("/logout", logoutUser);
 
 module.exports = router;

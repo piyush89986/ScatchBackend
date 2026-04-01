@@ -1,5 +1,5 @@
 const express = require("express");
-const isLoggedin = require("../middlewares/isLoggedin");
+const isLoggedin = require("../middlewares/auth");
 const productModel = require("../models/product.model");
 const userModel = require("../models/user.model");
 const router = express.Router();
@@ -8,11 +8,27 @@ const router = express.Router();
  * HOME / ROOT (React handles UI)
  */
 router.get("/", (req, res) => {
-  res.json({
-    loggedIn: false,
-  });
-});
+  const token = req.cookies.token;
 
+  if (!token) {
+    return res.json({
+      loggedIn: false,
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    res.json({
+      loggedIn: true,
+      user: decoded,
+    });
+  } catch (err) {
+    res.json({
+      loggedIn: false,
+    });
+  }
+});
 /**
  * SHOP PRODUCTS
  */
