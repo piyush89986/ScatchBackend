@@ -33,8 +33,9 @@ exports.registerUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: true, // ✅ required for HTTPS
+      sameSite: "none", // ✅ required for cross-site
+      path: "/", // ✅ important
     });
 
     res.status(201).json({
@@ -72,8 +73,9 @@ exports.loginUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: true, // ✅ required for HTTPS
+      sameSite: "none", // ✅ required for cross-site
+      path: "/", // ✅ important
     });
 
     res.json({
