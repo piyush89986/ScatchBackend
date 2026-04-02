@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
 /**
  * SHOP PRODUCTS
  */
-router.get("/shop", isLoggedin, async (req, res) => {
+router.get("/shop", isAuthenticated, async (req, res) => {
   try {
     const products = await productModel.find().lean();
 
@@ -58,7 +58,7 @@ router.get("/shop", isLoggedin, async (req, res) => {
 /**
  * CART DATA
  */
-router.get("/cart", isLoggedin, async (req, res) => {
+router.get("/cart", isAuthenticated, async (req, res) => {
   try {
     const user = await userModel
       .findOne({ email: req.user.email })
@@ -88,7 +88,7 @@ router.get("/cart", isLoggedin, async (req, res) => {
 /**
  * ADD TO CART
  */
-router.post("/addtocart/:productid", isLoggedin, async (req, res) => {
+router.post("/addtocart/:productid", isAuthenticated, async (req, res) => {
   try {
     const user = await userModel.findById(req.user._id);
 
