@@ -33,10 +33,10 @@ router.get("/", (req, res) => {
  */
 router.get("/shop", isAuthenticated, async (req, res) => {
   try {
-    const products = await productModel.find().lean();
+    const products = await productModel.find();
 
     const formattedProducts = products.map((product) => ({
-      ...product,
+      ...product._doc,
       image: product.image
         ? product.image.toString("base64")
         : null,
