@@ -3,11 +3,9 @@ const User = require("../models/user.model"); // apna model
 
 // 🔹 Generate Token Function
 const generateToken = (user) => {
-  return jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 // 🔹 REGISTER
@@ -35,8 +33,8 @@ exports.registerUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true, // production me true
+      sameSite: "lax",
+      secure: false,
     });
 
     res.status(201).json({
@@ -48,7 +46,6 @@ exports.registerUser = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -88,7 +85,6 @@ exports.loginUser = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
