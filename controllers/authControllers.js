@@ -36,7 +36,7 @@ exports.registerUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "none",
-      secure: false, // production me true
+      secure: true, // production me true
     });
 
     res.status(201).json({
