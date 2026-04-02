@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const isLoggedin = require("../middlewares/auth");
+const isAuthenticated = require("../middlewares/auth");
 const productModel = require("../models/product.model");
 const userModel = require("../models/user.model");
 
