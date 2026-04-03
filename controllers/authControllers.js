@@ -30,15 +30,15 @@ exports.registerUser = async (req, res) => {
     });
 
     const token = generateToken(user);
-    
+
     console.log(token);
-    
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // ✅ required for HTTPS
-      sameSite: "none", // ✅ required for cross-site
-      path: "/", // ✅ important
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      domain: ".onrender.com", // ✅ TRY THIS
     });
 
     res.status(201).json({
@@ -76,9 +76,10 @@ exports.loginUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // ✅ required for HTTPS
-      sameSite: "none", // ✅ required for cross-site
-      path: "/", // ✅ important
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      domain: ".onrender.com", // ✅ TRY THIS
     });
 
     res.json({

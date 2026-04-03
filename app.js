@@ -16,7 +16,7 @@ const flash = require("connect-flash");
 // 🔥 CORS सबसे पहले
 app.use(
   cors({
-    origin: ["https://scatch-frontend-gamma.vercel.app"],
+    origin: ["https://scatch-frontend-gamma.vercel.app", "http://localhost:5173"],
     credentials: true,
   }),
 );
