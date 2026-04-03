@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
 /**
  * SHOP PRODUCTS
  */
-router.get("/shop", isAuthenticated, async (req, res) => {
+router.get("/shop",  async (req, res) => {
   try {
     const products = await productModel.find();
 

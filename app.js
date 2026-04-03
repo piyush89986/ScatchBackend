@@ -13,17 +13,15 @@ const userRouter = require("./routes/userRouter");
 const expressSession = require("express-session");
 const flash = require("connect-flash");
 
-
 // 🔥 CORS सबसे पहले
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://scatch-frontend-gamma.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["https://scatch-frontend-gamma.vercel.app"],
+    credentials: true,
+  }),
+);
 
-app.use(isAuthenticated); 
+app.use(isAuthenticated);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -33,7 +31,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: process.env.EXPRESS_SESSION_SECRET,
-  })
+  }),
 );
 
 app.use(flash());

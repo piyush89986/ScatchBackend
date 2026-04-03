@@ -30,6 +30,9 @@ exports.registerUser = async (req, res) => {
     });
 
     const token = generateToken(user);
+    
+    console.log(token);
+    
 
     res.cookie("token", token, {
       httpOnly: true,
