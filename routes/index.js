@@ -1,5 +1,4 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../middlewares/auth");
 const productModel = require("../models/product.model");
 const userModel = require("../models/user.model");
@@ -9,23 +8,11 @@ const router = express.Router();
 /**
  * AUTH CHECK (HOME)
  */
-router.get("/", (req, res) => {
-  try {
-    const token = req.cookies?.token;
-
-    if (!token) {
-      return res.json({ loggedIn: false });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    return res.json({
-      loggedIn: true,
-      user: decoded,
-    });
-  } catch (err) {
-    return res.json({ loggedIn: false });
-  }
+router.get("/", isAuthenticated, (req, res) => {
+  return res.json({
+    loggedIn: true,
+    user: req.user,
+  });
 });
 
 /**
@@ -61,7 +48,7 @@ router.get("/shop", isAuthenticated, async (req, res) => {
 router.get("/cart", isAuthenticated, async (req, res) => {
   try {
     const user = await userModel
-      .findOne({ email: req.user.email })
+      .findById(req.user.id) // ✅ FIXED (id use karna hai)
       .populate("card")
       .lean();
 
@@ -90,7 +77,7 @@ router.get("/cart", isAuthenticated, async (req, res) => {
  */
 router.post("/addtocart/:productid", isAuthenticated, async (req, res) => {
   try {
-    const user = await userModel.findById(req.user._id);
+    const user = await userModel.findById(req.user.id); // ✅ FIXED
 
     user.card.push(req.params.productid);
     await user.save();

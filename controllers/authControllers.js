@@ -1,11 +1,16 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model"); // apna model
+const User = require("../models/user.model");
 
-// 🔹 Generate Token Function
+// 🔹 Generate Token
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  return jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
 };
 
 // 🔹 REGISTER
@@ -13,7 +18,6 @@ exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // check existing user
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({
@@ -22,28 +26,14 @@ exports.registerUser = async (req, res) => {
       });
     }
 
-    // create user
-    user = await User.create({
-      name,
-      email,
-      password, // assume hashing model me ho raha hai
-    });
+    user = await User.create({ name, email, password });
 
     const token = generateToken(user);
-
-    console.log(token);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      domain: ".onrender.com", // ✅ TRY THIS
-    });
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
+      token, // ✅ IMPORTANT
       user: {
         id: user._id,
         name: user.name,
@@ -74,17 +64,10 @@ exports.loginUser = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      domain: ".onrender.com", // ✅ TRY THIS
-    });
-
     res.json({
       success: true,
       message: "Login successful",
+      token, // ✅ IMPORTANT
       user: {
         id: user._id,
         name: user.name,
@@ -97,14 +80,4 @@ exports.loginUser = async (req, res) => {
       message: "Server error",
     });
   }
-};
-
-// 🔹 LOGOUT
-exports.logoutUser = (req, res) => {
-  res.clearCookie("token");
-
-  res.json({
-    success: true,
-    message: "Logged out successfully",
-  });
 };

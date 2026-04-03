@@ -4,22 +4,17 @@ const router = express.Router();
 const {
   registerUser,
   loginUser,
-  logoutUser,
 } = require("../controllers/authControllers");
+
+const isAuthenticated = require("../middlewares/auth");
 
 /**
  * CHECK USER AUTH STATUS
  */
-router.get("/me", (req, res) => {
-  if (req.user) {
-    return res.json({
-      loggedIn: true,
-      user: req.user,
-    });
-  }
-
+router.get("/me", isAuthenticated, (req, res) => {
   return res.json({
-    loggedIn: false,
+    loggedIn: true,
+    user: req.user,
   });
 });
 
@@ -32,10 +27,5 @@ router.post("/register", registerUser);
  * LOGIN
  */
 router.post("/login", loginUser);
-
-/**
- * LOGOUT
- */
-router.get("/logout", logoutUser);
 
 module.exports = router;
